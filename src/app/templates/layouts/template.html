@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include 'partials/_head.html' %}
+</head>
+<body class="bg-light">
+  {% include 'partials/_header.html' %}
+
+  <div id="app">
+    {% block content %}
+    {% endblock %}
+  </div>
+
+  {% include 'partials/_footer.html' %}
+</body>
+</html>

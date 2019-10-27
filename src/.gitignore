@@ -1,0 +1,14 @@
+.webassets-cache/
+webassets-external/
+__pycache__/
+.vscode/
+.DS_Store
+*.pyc
+*.pyo
+env
+venv
+*.env
+env*
+dist
+.idea
+dump.rdb

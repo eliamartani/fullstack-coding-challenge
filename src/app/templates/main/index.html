@@ -1,0 +1,70 @@
+{% extends 'layouts/template.html' %}
+
+{% block content %}
+  <main>
+    <div class="container-fluid h-100">
+      <div class="row justify-content-center align-items-center h-100">
+        <div class="col-xl-6 col-lg-8 my-5">
+          <div class="box-translate p-5 bg-info shadow-lg">
+            <div class="container mb-3">
+              <div class="row">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                      <div class="input-group-text h5 mb-0">
+                          (EN)
+                      </div>
+                  </div>
+                  <input
+                    id="input-translate-from"
+                    type="text"
+                    class="form-control form-control-lg p3"
+                    placeholder="Place your text here"
+                    aria-label="Phrase to be translated"
+                    aria-describedby="button-translate"
+                    required
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="container mb-5">
+              <div class="row">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <div class="input-group-text h5 mb-0">
+                      (ES)
+                    </div>
+                  </div>
+                  <input
+                    id="input-translate-to"
+                    type="text"
+                    class="form-control form-control-lg p3"
+                    placeholder="Translated text"
+                    aria-label="Translated text in Spanish"
+                    aria-readonly="true"
+                    readonly
+                  >
+                </div>
+              </div>
+            </div>
+
+            {% with list = translations %}
+              <div class="container">
+                <div class="row">
+                  <p class="h4 text-white">Previous translations</p>
+                  <ul class="list-group w-100">
+                    {% for text in list %}
+                      <li class="list-group-item text-dark">
+                        {{ text }}
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+            {% endwith %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+{% endblock %}
