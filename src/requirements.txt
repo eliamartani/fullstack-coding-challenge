@@ -1,2 +1,10 @@
 Flask
 Flask-Assets
+Flask-Compress
+Flask-Migrate
+Flask-Script
+Flask-SQLAlchemy
+Flask-WTF
+psycopg2
+requests
+unbabel-py

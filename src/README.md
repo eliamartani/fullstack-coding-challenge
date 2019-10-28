@@ -11,16 +11,10 @@ This step-by-step is intended to lead you to install this project at your enviro
 
 ## Install
 
-Flask
+Install using `pip install` all the plugins inside `requirements.txt`
 
 ```bash
-$ pip install Flask
-```
-
-Flask Assets
-
-```bash
-$ pip install Flask-Assets
+$ pip install -r requirements.txt
 ```
 
 For Sass, it's recommended to use Ruby's `gem` command
@@ -29,12 +23,22 @@ For Sass, it's recommended to use Ruby's `gem` command
 $ gem install sass
 ```
 
+Last but not least, make sure you have `postgresql` installed
+
+## Database
+
+Execute the command below to create the database
+
+```bash
+$ py app.py recreate_db
+```
+
 ## Running
 
 To run the app:
 
 ```bash
-$ py src/app.py
+$ py app.py runserver
 ```
 
 It will be running on http://localhost:5000/

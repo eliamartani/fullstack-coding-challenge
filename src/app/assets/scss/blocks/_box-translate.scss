@@ -1,5 +1,8 @@
 .box-translate {
   border-radius: 1rem;
+  .lang {
+    text-transform: uppercase;
+  }
   .list-group {
     .list-group-item {
       font-size: 1.25rem;

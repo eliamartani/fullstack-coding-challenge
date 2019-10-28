@@ -2,26 +2,39 @@ import os
 
 from flask import Flask
 from flask_assets import Environment
+from flask_compress import Compress
+from flask_sqlalchemy import SQLAlchemy
+from flask_wtf import CSRFProtect
 from app.assets import app_css, app_js
 from config import config as Config
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-def create_app(config):
+db = SQLAlchemy()
+compress = Compress()
+csrf = CSRFProtect()
+
+def create_app(env_name):
     app = Flask(__name__)
-    config_name = config
+    app_env = env_name
 
-    if not isinstance(config, str):
-        config_name = os.getenv('FLASK_CONFIG', 'default')
+    # Load config
+    app.config.from_object(Config[app_env])
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
-    app.config.from_object(Config[config_name])
+    # Initialize config
+    Config[app_env].init_app(app)
 
-    Config[config_name].init_app(app)
+    # Initialize extensions
+    db.init_app(app)
+    compress.init_app(app)
+    csrf.init_app(app)
 
-    # Set up asset pipeline
+    # Initialize asset pipeline
     assets_env = Environment(app)
     dirs = ['assets/scss', 'assets/js']
 
+    # Append frontend files
     for path in dirs:
         assets_env.append_path(os.path.join(basedir, path))
 

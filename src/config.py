@@ -2,25 +2,34 @@ import os
 import sys
 
 if os.path.exists('.env'):
-    print('Importing environment from .env file')
+    print('[config] Importing environment from .env file')
+
     for line in open('.env'):
         var = line.strip().split('=')
+
         if len(var) == 2:
             os.environ[var[0]] = var[1].replace("\"", "")
 
 class Config:
     # APP
-    APP_NAME = os.environ.get('APP_NAME', '')
+    APP_NAME = os.getenv('APP_NAME', '')
 
-    # API Key
-    API_USERNAME = os.environ.get('API_USERNAME', '')
-    API_KEY = os.environ.get('API_KEY', '')
+    # Unbabel API
+    UNBABEL_USERNAME = os.getenv('UNBABEL_USERNAME', '')
+    UNBABEL_KEY = os.getenv('UNBABEL_KEY', '')
+    UNBABEL_SANDBOX = os.getenv('UNBABEL_SANDBOX', False)
+    UNBABEL_SOURCE = os.getenv('UNBABEL_SOURCE', '')
+    UNBABEL_TARGET = os.getenv('UNBABEL_TARGET', '')
 
     # Database
-    DB_HOST = os.environ.get('DB_HOST', '')
-    DB_DATABASE = os.environ.get('DB_DATABASE', '')
-    DB_USERNAME = os.environ.get('DB_USERNAME', '')
-    DB_PASSWORD = os.environ.get('DB_PASSWORD', '')
+    DATABASE_URI = os.getenv('DATABASE_URI', '')
+
+    # SQL Alchemy
+    SQLALCHEMY_COMMIT_ON_TEARDOWN = True
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URI', '')
+
+    # CSRF
+    SECRET_KEY = os.getenv('SECRET_KEY', '')
 
     @staticmethod
     def init_app(app):
@@ -33,7 +42,7 @@ class DevelopmentConfig(Config):
 
     @classmethod
     def init_app(cls, app):
-        print('DEVELOP MODE.')
+        print('[config] DEVELOP MODE')
 
 
 class TestingConfig(Config):
@@ -41,7 +50,7 @@ class TestingConfig(Config):
 
     @classmethod
     def init_app(cls, app):
-        print('TESTING MODE.')
+        print('[config] TESTING MODE')
 
 
 class ProductionConfig(Config):

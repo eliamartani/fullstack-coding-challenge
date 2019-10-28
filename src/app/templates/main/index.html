@@ -10,18 +10,21 @@
               <div class="row">
                 <div class="input-group">
                   <div class="input-group-prepend">
-                      <div class="input-group-text h5 mb-0">
-                          (EN)
+                      <div class="lang input-group-text h5 mb-0">
+                          ({{ config.UNBABEL_SOURCE }})
                       </div>
                   </div>
                   <input
                     id="input-translate-from"
+                    name="input-translate-from"
                     type="text"
                     class="form-control form-control-lg p3"
                     placeholder="Place your text here"
                     aria-label="Phrase to be translated"
                     aria-describedby="button-translate"
+                    maxlength="200"
                     required
+                    autofocus
                   >
                 </div>
               </div>
@@ -31,12 +34,13 @@
               <div class="row">
                 <div class="input-group">
                   <div class="input-group-prepend">
-                    <div class="input-group-text h5 mb-0">
-                      (ES)
+                    <div class="lang input-group-text h5 mb-0">
+                      ({{ config.UNBABEL_TARGET }})
                     </div>
                   </div>
                   <input
                     id="input-translate-to"
+                    name="input-translate-to"
                     type="text"
                     class="form-control form-control-lg p3"
                     placeholder="Translated text"
@@ -48,20 +52,17 @@
               </div>
             </div>
 
-            {% with list = translations %}
-              <div class="container">
-                <div class="row">
-                  <p class="h4 text-white">Previous translations</p>
-                  <ul class="list-group w-100">
-                    {% for text in list %}
-                      <li class="list-group-item text-dark">
-                        {{ text }}
-                      </li>
-                    {% endfor %}
-                  </ul>
-                </div>
+            <div class="container">
+              <div class="row">
+                <p class="h4 text-white">Previous translations</p>
+                <ul
+                  id="list-previous"
+                  class="list-group w-100"
+                >
+                  <li class="list-group-item text-dark">Loading...</li>
+                </ul>
               </div>
-            {% endwith %}
+            </div>
           </div>
         </div>
       </div>
