@@ -1,105 +1,129 @@
 'use strict';
 
 (function () {
-  let checkApiId
-  let typingTimerId
-  const checkApiTimeout = 2000
-  const typingTimerTimeout = 1000
+  let intervalId
+  let timeoutId
 
-  const attachEvent = function (element, eventName, fn) {
-    if (!element) {
-      return
+  const config = {
+    check: {
+      intervalTimeout: 5000
+    },
+    typing: {
+      intervalTimeout: 1000
+    },
+    inputs: {
+      from: 'input-translate-from',
+      to: 'input-translate-to'
+    },
+    api: {
+      check: '/check',
+      previous: '/previous',
+      schedule: '/schedule'
     }
-
-    element.addEventListener(eventName, fn)
   }
 
-  const clearInput = function (event) {
-    if (!event.target.value) {
-      document.getElementById('input-translate-to').value = ''
+  const api = {
+    fetch: function (uri, func, params, onError) {
+      return axios.get(uri, params)
+        .then(func)
+        .catch(function (error) {
+          events.logError(error)
+
+          if (onError) {
+            onError()
+          }
+        })
     }
   }
 
-  const debounceTyping = function (event) {
-    const target = event.target
-
-    window.clearTimeout(typingTimerId)
-
-    typingTimerId = window.setTimeout(function () {
-      // if empty, do not proceed
-      if (!target.value) {
+  const events = {
+    attach: function (element, eventName, func) {
+      if (!element) {
         return
       }
 
-      target.disabled = true
+      element.addEventListener(eventName, func)
+    },
+    debounce: function (timeoutId, timeout, func) {
+      window.clearTimeout(timeoutId)
+      timeoutId = window.setTimeout(func, timeout)
 
-      scheduleTranslation(target)
-    }, typingTimerTimeout)
+      return timeoutId
+    },
+    logError: function (error) {
+      const message = error.response && error.response.data && error.response.data.message
+        ? error.response.data.message
+        : error.message
+
+      console.error('[log]', message)
+    }
   }
 
-  const fetchApi = function (uri, fn, value) {
-    const params = value
+  const createParameter = function (value) {
+    return value
       ? {
           params: {
-            'value': window.encodeURIComponent(value)
+            value: window.encodeURIComponent(value)
           }
         }
       : null
-
-    axios.get(uri, params).then(fn).catch(logError)
   }
 
-  const logError = function (error) {
-    const message = error.response && error.response.data && error.response.data.message
-      ? error.response.data.message
-      : error.message
+  const checkTranslation = function (uid) {
+    const uidParameter = createParameter(uid)
 
-    console.error('[log]', message)
+    intervalId = window.setInterval(function () {
+      api.fetch(config.api.check, function (response) {
+        const translated = response.data.translated
+        const inputFrom = document.getElementById(config.inputs.from)
+        const inputTo = document.getElementById(config.inputs.to)
+
+        // translated !!
+        if (translated) {
+          // Clear future interval
+          window.clearInterval(intervalId)
+
+          // Update translated value
+          inputTo.value = translated
+
+          // Remove blocking state
+          inputFrom.removeAttribute('disabled')
+
+          // Retrieve previous translations
+          previousTranslations()
+        }
+      }, uidParameter, function () {
+        // Clear future interval
+        window.clearInterval(intervalId)
+      })
+    }, config.check.intervalTimeout)
   }
 
   const scheduleTranslation = function (target) {
-    const inputTo = document.getElementById('input-translate-to')
+    const translationParameter = createParameter(target.value)
 
-    inputTo.value = '...'
+    api.fetch(config.api.schedule, function (response) {
+      checkTranslation(response.data.uid)
+    }, translationParameter, function () {
+      const inputFrom = document.getElementById(config.inputs.from)
 
-    fetchApi('/schedule', function (response) {
-      const uid = response.data.uid
-
-      checkApiId = window.setInterval(function () {
-        fetchApi('/check', function (response) {
-          const translated = response.data.translated
-
-          // translated !!
-          if (translated) {
-            // Clear future interval
-            window.clearInterval(checkApiId)
-
-            // Update translated value
-            inputTo.value = translated
-
-            // Remove blocking state
-            target.removeAttribute('disabled')
-
-            // Retrieve previous translations
-            previousTranslations()
-          }
-        }, uid)
-      }, checkApiTimeout)
-    }, target.value)
+      // Remove blocking state
+      inputFrom.removeAttribute('disabled')
+    })
   }
 
   const previousTranslations = function () {
-    fetchApi('/previous', function (response) {
+    api.fetch(config.api.previous, function (response) {
       const ul = document.getElementById('list-previous')
-      const list = response.data
+      const previousList = response.data
       let li = ul.children[0].cloneNode()
 
-      if (!list.length) {
+      if (!previousList || !previousList.length) {
         return
       }
 
-      let childrens = list.map(function (text) {
-        li.innerHTML = text
+      let childrens = previousList.map(function (item) {
+        li.innerHTML = `${item.from_text} => ${item.to_text}`
 
         return li.outerHTML
       }).join('')
@@ -111,20 +135,37 @@
     })
   }
 
-  // dom loaded
-  attachEvent(
-    document,
-    'DOMContentLoaded',
-    function () {
-      const inputFrom = document.getElementById('input-translate-from')
+  // DOM Loaded
+  events.attach(document, 'DOMContentLoaded', function () {
+    const inputFrom = document.getElementById(config.inputs.from)
 
-      if (inputFrom) {
-        // keypress for input
-        attachEvent(inputFrom, 'keypress', debounceTyping)
-        attachEvent(inputFrom, 'blur', clearInput)
+    events.attach(inputFrom, 'keypress', function (event) {
+      const target = event.target
+
+      timeoutId = events.debounce(timeoutId, config.typing.intervalTimeout, function () {
+        // if empty, do not proceed
+        if (!target.value) {
+          return
+        }
+
+        const inputTo = document.getElementById(config.inputs.to)
+
+        inputTo.value = ''
+
+        target.disabled = true
+
+        scheduleTranslation(target)
+      })
+    })
+
+    events.attach(inputFrom, 'blur', function (event) {
+      if (!event.target.value) {
+        const inputTo = document.getElementById(config.inputs.to)
+
+        inputTo.value = ''
       }
+    })
 
-      previousTranslations()
-    }
-  )
+    previousTranslations()
+  })
 })()

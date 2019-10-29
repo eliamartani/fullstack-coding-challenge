@@ -8,9 +8,8 @@ from flask_script import Manager
 from app import create_app, db
 
 app = create_app(os.getenv('APP_ENV', 'default'))
-migrate = Migrate()
-manager = Manager(app)
 migrate = Migrate(app, db)
+manager = Manager(app)
 
 manager.add_command('db', MigrateCommand)
 

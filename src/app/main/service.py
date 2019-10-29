@@ -1,10 +1,8 @@
-import time
-
 from flask import current_app
 from unbabel.api import UnbabelApi
 
 
-def create_model():
+def unbabel_api_settings():
     username = current_app.config['UNBABEL_USERNAME']
     api_key = current_app.config['UNBABEL_KEY']
     sandbox = current_app.config['UNBABEL_SANDBOX']
@@ -13,13 +11,13 @@ def create_model():
     return UnbabelApi(username=username, api_key=api_key, sandbox=sandbox)
 
 
-def schedule_translation(text):
+def service_schedule_translation(text):
     try:
-        # Set up account
         source = current_app.config['UNBABEL_SOURCE']
         target = current_app.config['UNBABEL_TARGET']
 
-        uapi = create_model()
+        # Set up model
+        uapi = unbabel_api_settings()
 
         # Create request
         translation = uapi.post_translations(text=text,
@@ -27,23 +25,24 @@ def schedule_translation(text):
             target_language=target)
 
         return translation.uid
-    except:
+    except Exception as e:
         print('[unbabel] Error trying to schedule translation')
+        print(str(e))
+
         return ''
 
 
-def check_translation(uid):
+def service_check_translation(uid):
     try:
-        # Set up account
-        uapi = create_model()
+        # Set up model
+        uapi = unbabel_api_settings()
 
         # Create request
         translation = uapi.get_translation(uid)
 
-        if (translation.status == 'completed'):
-            return translation.translation
+        return translation.translation
+    except Exception as e:
+        print('[unbabel] Error trying to request translated data')
+        print(str(e))
 
-        return ''
-    except:
-        print('[unbabel] Error trying to request data')
         return ''

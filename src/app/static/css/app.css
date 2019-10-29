@@ -1,0 +1,23 @@
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Eliamar\/source\/repos\/Github\/fullstack-coding-challenge\/src\/app\/assets\/scss\/global\/_main\.scss}line{font-family:\000031}}
+*, html {
+  font-family: 'PT Sans', 'sans-serif';
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Eliamar\/source\/repos\/Github\/fullstack-coding-challenge\/src\/app\/assets\/scss\/partials\/_header\.scss}line{font-family:\000032}}
+.header .title {
+  font-size: 2rem;
+  line-height: 1.2;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Eliamar\/source\/repos\/Github\/fullstack-coding-challenge\/src\/app\/assets\/scss\/blocks\/_box-translate\.scss}line{font-family:\000031}}
+.box-translate {
+  border-radius: 1rem;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Eliamar\/source\/repos\/Github\/fullstack-coding-challenge\/src\/app\/assets\/scss\/blocks\/_box-translate\.scss}line{font-family:\000033}}
+.box-translate .lang {
+  text-transform: uppercase;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Eliamar\/source\/repos\/Github\/fullstack-coding-challenge\/src\/app\/assets\/scss\/blocks\/_box-translate\.scss}line{font-family:\000037}}
+.box-translate .list-group .list-group-item {
+  font-size: 1.25rem;
+}

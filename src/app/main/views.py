@@ -1,5 +1,9 @@
+import sys
+
 from flask import Blueprint, render_template, request, jsonify
-from .service import schedule_translation, check_translation
+from .service import service_schedule_translation, service_check_translation
+from .db import db_store_translation, db_store_schedule, db_previous_translations
+from ..models import Translation
 
 main = Blueprint('main', __name__)
 
@@ -19,17 +23,24 @@ def schedule():
         return jsonify({ 'message': 'Empty value to translate' }), 422
 
     # Decode text
-    try:
+    PYTHON_VERSION = sys.version_info[0]
+
+    if PYTHON_VERSION == 3:
         from urllib.parse import urlparse
+
         decoded = urlparse.unquote(text)
-    except:
-        # Python 2 issue
-        # from urlparse import urlparse
-        # decoded = urlparse.parse_qs(text)
-        decoded = text
+    else:
+        from urlparse import urlparse
+
+        decoded = urlparse.parse_qs(text)
 
     # Translate it
-    uid = schedule_translation(decoded)
+    uid = service_schedule_translation(decoded)
+
+    # Store record in database
+    translation = Translation(uid, decoded, None)
+
+    db_store_schedule(translation)
 
     # Return JSON structure
     return jsonify({
@@ -47,11 +58,11 @@ def translate():
         return jsonify({ 'message': 'Empty value to translate' }), 422
 
     # Translate it
-    translated = check_translation(uid)
+    translated = service_check_translation(uid)
 
     if translated and translated.strip():
-        # TODO: Save on database
-        print(translated)
+
+        db_store_translation(uid, translated)
 
     # Return JSON structure
     return jsonify({
@@ -61,11 +72,6 @@ def translate():
 
 @main.route('/previous', methods=['GET'])
 def previous ():
-    return jsonify([
-        'Teste teste 1',
-        'Teste teste 2',
-        'Teste teste 3',
-        'Teste teste 4',
-        'Teste teste 5',
-        'Teste teste 6'
-    ])
+    list = db_previous_translations()
+
+    return list

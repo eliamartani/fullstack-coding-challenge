@@ -37,8 +37,9 @@ class Config:
 
 
 class DevelopmentConfig(Config):
-    DEBUG = True
     ASSETS_DEBUG = True
+    DEBUG = True
+    DEVELOPMENT = True
 
     @classmethod
     def init_app(cls, app):
@@ -54,6 +55,8 @@ class TestingConfig(Config):
 
 
 class ProductionConfig(Config):
+    DEBUG = False
+
     @classmethod
     def init_app(cls, app):
         Config.init_app(app)

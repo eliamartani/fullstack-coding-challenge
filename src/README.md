@@ -29,6 +29,18 @@ Last but not least, make sure you have `postgresql` installed
 
 Execute the command below to create the database
 
+### Creating migration files
+
+```bash
+$ py app.py db init
+```
+
+```bash
+$ py app.py db migrate
+```
+
+### Recreating database
+
 ```bash
 $ py app.py recreate_db
 ```
@@ -41,4 +53,4 @@ To run the app:
 $ py app.py runserver
 ```
 
-It will be running on http://localhost:5000/
+It will run on http://127.0.0.1:5000/
